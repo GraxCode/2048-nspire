@@ -1,9 +1,5 @@
 #include <os.h>
-#include <SDL/SDL_config.h>
 #include <SDL/SDL.h>
-#include <iostream>
-
-using namespace std;
 
 int pad = 10; //padding of the table
 
@@ -22,7 +18,6 @@ int lastscore = -1;
 bool changed = false;
 
 //colors
-
 Uint32 _2 = 0;
 Uint32 _4 = 0;
 Uint32 _8 = 0;
@@ -150,8 +145,8 @@ void draw_tile(int col, int row, int num)
     }
     SDL_Rect rect = { x + tile_pad, y + tile_pad, w / 4 - (tile_pad * 2), h / 4 - (tile_pad * 2) };
     draw_rect_bordered(rect, color);
-    std::string str = std::to_string(num);
-    const char* s = str.c_str();
+    char* s = (char*)malloc(5 * sizeof(char));
+	sprintf(s, "%d", num);
     nSDL_DrawString(screen, font, x + w / 8 - nSDL_GetStringWidth(font, s) / 2, y + h / 8 - nSDL_GetStringHeight(font, s) / 2, s);
 }
 
@@ -258,7 +253,7 @@ void left()
     }
 
     if (!lost() && changed) {
-        std::copy(std::begin(tiles_backup), std::end(tiles_backup), std::begin(last)); //there is proboably a better solution but whatever
+		memcpy(last, tiles_backup, sizeof(last));
         add_tile();
     }
 }
@@ -283,7 +278,7 @@ void right()
     }
 
     if (!lost() && changed) {
-        std::copy(std::begin(tiles_backup), std::end(tiles_backup), std::begin(last));
+        memcpy(last, tiles_backup, sizeof(last));
         add_tile();
     }
 }
@@ -308,7 +303,7 @@ void up()
     }
 
     if (!lost() && changed) {
-        std::copy(std::begin(tiles_backup), std::end(tiles_backup), std::begin(last));
+        memcpy(last, tiles_backup, sizeof(last));
         add_tile();
     }
 }
@@ -333,7 +328,7 @@ void down()
     }
 
     if (!lost() && changed) {
-        std::copy(std::begin(tiles_backup), std::end(tiles_backup), std::begin(last));
+        memcpy(last, tiles_backup, sizeof(last));
         add_tile();
     }
 }
@@ -344,14 +339,11 @@ void draw_bg()
 
 void draw_score(int score)
 {
-    std::string str = std::to_string(score); //"Score: " +
-    nSDL_DrawString(screen, font, 10, 10, str.c_str());
-    std::string version = "v1.1";
-    const char* ver = version.c_str();
+    nSDL_DrawString(screen, font, 10, 10, "%d", score);
+    const char* ver = "v1.2";
     nSDL_DrawString(screen, font, 310 - nSDL_GetStringWidth(font, ver), 10, ver);
     if(lastscore == -1) { //only display at start
-        std::string copyright = "Made by\nnoverify";
-        const char* cpr = copyright.c_str();
+        const char* cpr = "Made by\nnoverify";
         nSDL_DrawString(screen, tinyfont, 320 - nSDL_GetStringWidth(font, cpr), 230 - nSDL_GetStringHeight(font, cpr), cpr);
     }
 }
@@ -383,7 +375,7 @@ void handle_keydown(SDLKey key)
         break;
     case SDLK_LSHIFT:
         //undo
-        std::copy(std::begin(last), std::end(last), std::begin(tiles));
+        memcpy(tiles, last, sizeof(tiles));
         score = lastscore;
         break;
     default:
