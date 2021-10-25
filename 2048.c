@@ -66,6 +66,7 @@ void init(void)
 
 void quit(void)
 {
+    SDL_FreeSurface(screen);
     SDL_Quit();
 }
 
