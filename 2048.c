@@ -66,6 +66,7 @@ void init(void)
 
 void quit(void)
 {
+    SDL_FreeSurface(screen);
     SDL_Quit();
 }
 
@@ -145,7 +146,7 @@ void draw_tile(int col, int row, int num)
     }
     SDL_Rect rect = { x + tile_pad, y + tile_pad, w / 4 - (tile_pad * 2), h / 4 - (tile_pad * 2) };
     draw_rect_bordered(rect, color);
-    char* s = (char*)malloc(5 * sizeof(char));
+    char s[10];
 	sprintf(s, "%d", num);
     nSDL_DrawString(screen, font, x + w / 8 - nSDL_GetStringWidth(font, s) / 2, y + h / 8 - nSDL_GetStringHeight(font, s) / 2, s);
 }
